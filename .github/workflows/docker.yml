@@ -1,5 +1,5 @@
-# SSM
-name: GitOps SSM CICD Pipeline
+# DOCKER
+name: GitOps DOCKER CICD Pipeline
 on:
   push:
     branches:
@@ -18,16 +18,15 @@ jobs:
         aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
         aws-region: ${{secrets.AWS_REGION}}
 
-    - name: S3에서 프라이빗으로 배포
+    - name: 컨테이너 배포 및 S3 파일 싱크
       run: |
-        aws s3 sync html/ s3://std08-v1-bucket/ --delete
         aws ssm send-command \
           --instance-ids "i-098c52d8121bddab5" \
           --document-name "AWS-RunShellScript" \
           --parameters "commands=[
-            \"sudo aws s3 sync s3://std08-v1-bucket/ /usr/share/nginx/html/ --delete\",
-            \"sudo chown -R ec2-user:nginx /usr/share/nginx/html\",
-            \"sudo systemctl reload nginx\"
+            \"docker stop nginx-container || true\",
+            \"docker rm nginx-container || true\",
+            \"docker run -d --name nginx-container -p 80:80 nginx:1.31.3-alpine\"
           ]" \
           --region ${{secrets.AWS_REGION}} \
-          --comment "Deploying SSM"
+          --comment "Deploying SSM docker"
