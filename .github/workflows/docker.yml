@@ -37,9 +37,10 @@ jobs:
           --instance-ids "i-098c52d8121bddab5" \
           --document-name "AWS-RunShellScript" \
           --parameters "commands=[
-            \"docker stop nginx-container || true\",
-            \"docker rm nginx-container || true\",
-            \"docker run -d --name nginx-container -p 80:80 nginx:1.31.3-alpine\"
+            \"sudo docker pull yjunho/nginx:1.31.3-cd\",
+            \"sudo docker stop nginx-container || true\",
+            \"sudo docker rm nginx-container || true\",
+            \"sudo docker run -d --name nginx-container -p 80:80 yjunho/nginx:1.31.3-cd\"
           ]" \
           --region ${{secrets.AWS_REGION}} \
           --comment "Deploying SSM docker"
